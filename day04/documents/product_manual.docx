@@ -1,0 +1,19 @@
+
+    PRODUCT MANUAL — AI Assistant Pro v2.0
+    
+    Installation:
+    Run pip install ai-assistant-pro to install.
+    Requires Python 3.9 or higher.
+    Minimum 8GB RAM required.
+    
+    Features:
+    - Natural language processing
+    - Multi-document search
+    - Real-time response generation
+    - API integration support
+    
+    Troubleshooting:
+    If the product crashes, restart the service.
+    For API errors, check your API key in settings.
+    Contact support@aiassistant.com for help.
+    
