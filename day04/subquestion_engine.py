@@ -8,6 +8,7 @@ from llama_index.core.tools import QueryEngineTool
 # Google GenAI packages
 from llama_index.llms.google_genai import GoogleGenAI
 from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
+from llama_index.core.question_gen import LLMQuestionGenerator
 
 load_dotenv()
 
@@ -53,12 +54,14 @@ tools = [
 # ─────────────────────────────────────────────
 # STEP 4: Create the SubQuestion Query Engine
 # ─────────────────────────────────────────────
+question_gen_instance = LLMQuestionGenerator.from_defaults(llm=Settings.llm)
+
 sub_engine = SubQuestionQueryEngine.from_defaults(
     query_engine_tools=tools,
-    verbose=True  # Yeh terminal par live sub-questions toot'te hue dikhayega!
+    question_gen=question_gen_instance,  
+    verbose=True
 )
-
-# Complex Query — Jis ka data teeno alag files mein chupa hai
+# Complex Query 
 print("\n" + "="*60)
 complex_query = """
 Give me a quick company summary: 
