@@ -21,12 +21,12 @@ Settings.embed_model = GoogleGenAIEmbedding(
     api_key=os.environ.get("GEMINI_API_KEY")
 )
 
-print("📂 Loading files individually...")
+print("Loading files individually...")
 policy_docs = SimpleDirectoryReader(input_files=["day04/documents/company_policy.txt"]).load_data()
 finance_docs = SimpleDirectoryReader(input_files=["day04/documents/financial_report.pdf"]).load_data()
 product_docs = SimpleDirectoryReader(input_files=["day04/documents/product_manual.docx"]).load_data()
 
-print("⚡ Building dedicated indexes...")
+print("Building dedicated indexes...")
 policy_index = VectorStoreIndex.from_documents(policy_docs)
 finance_index = VectorStoreIndex.from_documents(finance_docs)
 product_index = VectorStoreIndex.from_documents(product_docs)
