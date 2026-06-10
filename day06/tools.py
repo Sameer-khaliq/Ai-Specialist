@@ -4,9 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ─────────────────────────────────────────────
-# TOOL 1: WEATHER
-# ─────────────────────────────────────────────
+#TOOL 1: WEATHER
+
 def get_weather(city: str) -> dict:
     url = "https://api.openweathermap.org/data/2.5/weather"
     params = {
@@ -29,9 +28,9 @@ def get_weather(city: str) -> dict:
         "wind_speed": data["wind"]["speed"]
     }
 
-# ─────────────────────────────────────────────
+
 # TOOL 2: NEWS
-# ─────────────────────────────────────────────
+
 def get_news(topic: str, count: int = 3) -> dict:
     url = "https://newsapi.org/v2/everything"
     params = {
@@ -58,9 +57,9 @@ def get_news(topic: str, count: int = 3) -> dict:
 
     return {"topic": topic, "articles": articles}
 
-# ─────────────────────────────────────────────
+
 # TOOL 3: SEARCH
-# ─────────────────────────────────────────────
+
 def search_web(query: str) -> dict:
     url = "https://serpapi.com/search"
     params = {

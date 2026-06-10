@@ -8,18 +8,16 @@ from tool_definitions import TOOL_DEFINITIONS
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# ─────────────────────────────────────────────
 # TOOL REGISTRY — name se function map karo
-# ─────────────────────────────────────────────
+
 TOOL_REGISTRY = {
     "get_weather": get_weather,
     "get_news": get_news,
     "search_web": search_web
 }
 
-# ─────────────────────────────────────────────
 # Gemini tools format mein convert karo
-# ─────────────────────────────────────────────
+
 def build_gemini_tools():
     function_declarations = []
     for tool in TOOL_DEFINITIONS:
@@ -44,9 +42,8 @@ def build_gemini_tools():
         )
     return [genai.protos.Tool(function_declarations=function_declarations)]
 
-# ─────────────────────────────────────────────
 # AGENT LOOP
-# ─────────────────────────────────────────────
+
 def run_agent(user_input: str) -> str:
     model = genai.GenerativeModel(
         model_name="gemini-1.5-flash",
@@ -55,7 +52,7 @@ def run_agent(user_input: str) -> str:
 
     print(f"\n👤 User: {user_input}")
     
-    # Step 1: Send to Gemini — it decides which tool to call
+    # Step 1: Send to Gemini , it decides which tool to call
     response = model.generate_content(user_input)
     
     # Step 2: Check if Gemini wants to call a tool
@@ -64,13 +61,13 @@ def run_agent(user_input: str) -> str:
             tool_name = part.function_call.name
             tool_args = dict(part.function_call.args)
             
-            print(f"🔧 Tool selected: {tool_name}")
-            print(f"📥 Arguments: {tool_args}")
+            print(f" Tool selected: {tool_name}")
+            print(f" Arguments: {tool_args}")
             
             # Step 3: Execute the actual tool (real API call)
             if tool_name in TOOL_REGISTRY:
                 tool_result = TOOL_REGISTRY[tool_name](**tool_args)
-                print(f"📤 Tool result: {json.dumps(tool_result, indent=2)}")
+                print(f" Tool result: {json.dumps(tool_result, indent=2)}")
                 
                 # Step 4: Send result back to Gemini for final response
                 final_response = model.generate_content([
