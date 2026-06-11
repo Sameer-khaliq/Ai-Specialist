@@ -30,8 +30,8 @@ TOOL_DEFINITIONS = [
                 },
                 "count": {
                     "type": "integer",
-                    "description": "Number of articles to return, default 3",
-                    "default": 3
+                    "description": "Number of articles to return, default 2",
+                    "default": 2
                 }
             },
             "required": ["topic"]

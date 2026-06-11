@@ -31,7 +31,7 @@ def get_weather(city: str) -> dict:
 
 # TOOL 2: NEWS
 
-def get_news(topic: str, count: int = 3) -> dict:
+def get_news(topic: str, count: int = 2) -> dict:
     url = "https://newsapi.org/v2/everything"
     params = {
         "q": topic,
