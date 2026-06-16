@@ -48,7 +48,7 @@ def build_dense_index(chunks: list[str]):
     embeddings_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     client = chromadb.Client()
 
-    # Agar collection pehle se hai toh delete karo
+    # Agar collection pehle se hai toh delete
     try:
         client.delete_collection("hybrid_search")
     except:
@@ -77,15 +77,15 @@ def reciprocal_rank_fusion(bm25_results: list, dense_results: list, k: int = 60)
     """
     scores = {}
 
-    # BM25 results mein rank assign karo
+    # BM25 results mein rank assign 
     for rank, (doc, _) in enumerate(bm25_results):
         scores[doc] = scores.get(doc, 0) + 1 / (k + rank + 1)
 
-    # Dense results mein rank assign karo
+    # Dense results mein rank assign
     for rank, doc in enumerate(dense_results):
         scores[doc] = scores.get(doc, 0) + 1 / (k + rank + 1)
 
-    # Score ke hisaab se sort karo
+    # Score ke hisaab se sort 
     ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
     return ranked
 
