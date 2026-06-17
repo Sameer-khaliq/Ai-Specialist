@@ -10,3 +10,4 @@
 - Day 07 ✅ - Deployed the FastAPI streaming backend to Vercel with production security guards for   -              input-token
 - Day 08 ✅ - Foundation for document Q&A systems — customer support bots, knowledge bases, policy search -              tools.
 - Day 09 ✅ - Implemented hybrid search with BM25 + dense retrieval and RRF fusion
+- Day 10 ✅ - In Progress............
