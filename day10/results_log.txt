@@ -1,0 +1,20 @@
+QUERY: what is client server database architecture
+NAIVE: computers while the server handles queries and updates. There are three types of client server architecture described below: Single-Tier Database Architecture : In a single-tier architecture, the data
+HYDE: computers while the server handles queries and updates. There are three types of client server architecture described below: Single-Tier Database Architecture : In a single-tier architecture, the data
+------------------------------------------------------------
+QUERY: what is single tier database architecture
+NAIVE: of a single-tier database. Two-Tier Database Architecture : In a two-tier architecture, the client directly communicates with the database server. The client sends queries (like SQL commands) to the s
+HYDE: any network connection or middle layer. The main advantage is simplicity. Since everything runs on the same system, it is faster for small-scale use, and there are no network delays. But the disadvant
+------------------------------------------------------------
+QUERY: what is a homogeneous distributed database
+NAIVE: data structures, and operating system. Since everything is uniform, the system looks like a single database to the user even though it is spread across different locations. This makes communication an
+HYDE: data structures, and operating system. Since everything is uniform, the system looks like a single database to the user even though it is spread across different locations. This makes communication an
+------------------------------------------------------------
+QUERY: which database architecture is most secure for online banking
+NAIVE: and easier to manage, since clients don’t directly access the database. However, it is more complex to design compared to the two-tier model. Example : Online banking systems where the user’s app comm
+HYDE: and easier to manage, since clients don’t directly access the database. However, it is more complex to design compared to the two-tier model. Example : Online banking systems where the user’s app comm
+------------------------------------------------------------
+QUERY: how does data stay reliable when spread across multiple locations
+NAIVE: some cases, copies of the same data are replicated in different locations. The benefit is reliability, faster access for users near different sites, and fault tolerance. However, managing and synchron
+HYDE: some cases, copies of the same data are replicated in different locations. The benefit is reliability, faster access for users near different sites, and fault tolerance. However, managing and synchron
+------------------------------------------------------------
