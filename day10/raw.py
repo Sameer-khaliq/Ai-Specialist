@@ -1,61 +1,131 @@
+import os
+import time
+from pypdf import PdfReader
+import chromadb
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Sahi aur updated models setup
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+embeddings_model = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+
+
+# ─── STEP 1: PDF CHUNKS (Same as Day 9) ─────────────────────────────────────
+
+def load_pdf_chunks(pdf_path: str, chunk_size: int = 500) -> list[str]:
+    reader = PdfReader(pdf_path)
+    full_text = ""
+    for page in reader.pages:
+        full_text += page.extract_text() + "\n"
+
+    words = full_text.split()
+    chunks = []
+    current_chunk = []
+    current_len = 0
+
+    for word in words:
+        current_chunk.append(word)
+        current_len += len(word) + 1
+        if current_len >= chunk_size:
+            chunks.append(" ".join(current_chunk))
+            current_chunk = []
+            current_len = 0
+
+    if current_chunk:
+        chunks.append(" ".join(current_chunk))
+
+    return chunks
+
+
+# ─── STEP 2: CHROMADB DENSE INDEX ───────────────────────────────────────────
+
+def build_dense_index(chunks: list[str]):
+    client = chromadb.Client()
+    try:
+        client.delete_collection("hyde_search")
+    except Exception:
+        pass
+
+    collection = client.create_collection("hyde_search")
+    
+    print("Generating vector embeddings for chunks...")
+    embeds = embeddings_model.embed_documents(chunks)
+
+    collection.add(
+        documents=chunks,
+        embeddings=embeds,
+        ids=[str(i) for i in range(len(chunks))]
+    )
+    return collection
+
+
+# ─── STEP 3: HYPOTHETICAL ANSWER GENERATION ──────────────────────────────────
+
 def generate_hypothetical_answer(query: str) -> str:
-    prompt = f"""Write a short, plausible passage that could answer this question. 
-Write it as if it's an excerpt from a document — declarative, factual tone. 
-Do not say "I don't know" — generate a plausible-sounding answer even if uncertain.
+    prompt = f"""Answer the following question in 3-4 sentences as if you are
+writing a factual passage from a textbook. Be specific and detailed,
+even if you are not 100% sure of the answer.
 
 Question: {query}
 
-Passage:"""
-    
-    response = client.models.generate_content(
-        model="gemini-2.0-flash-lite",
-        contents=prompt
-    )
-    return response.text
-    def hyde_retrieve(query: str, collection, top_k: int = 3) -> list[str]:
-    hypothetical_doc = generate_hypothetical_answer(query)
-    
-    results = collection.query(
-        query_texts=[hypothetical_doc],  # hypothetical answer embed hoga, not original query
-        n_results=top_k
-    )
-    
-    return results['documents'][0]
-def naive_retrieve(query: str, collection, top_k: int = 3) -> list[str]:
-    results = collection.query(
-        query_texts=[query],  # direct query embedding
-        n_results=top_k
-    )
-    return results['documents'][0]##
-test_queries = {
-    "short_factual": [
-        "What is E4042?",
-        "Define centralized database",
-        # ... 3 more
-    ],
-    "conversational": [
-        "Can you explain how client-server systems work?",
-        "I'm confused about database transactions, help?",
-        # ... 3 more
-    ],
-    "vague": [
-        "Tell me about architecture",
-        "What's this about?",
-        # ... 3 more
-    ],
-    "specific_technical": [
-        "What does Section 7.3.2 say?",
-        "TLS encryption requirements?",
-        # ... 3 more
-    ]
-}#
-print(f"{'Query':<50} | {'Naive Top':<30} | {'HyDE Top':<30}")
-print("-" * 110)
+Answer:"""
 
-for category, queries in test_queries.items():
-    print(f"\n=== {category.upper()} ===")
-    for query in queries:
-        naive_result = naive_retrieve(query, collection, top_k=1)[0]
-        hyde_result = hyde_retrieve(query, collection, top_k=1)[0]
-        
-        print(f"{query[:48]:<50} | {naive_result[:28]:<30} | {hyde_result[:28]:<30}")
+    response = llm.invoke(prompt)
+    return response.content
+
+
+# ─── STEP 4: HYDE SEARCH ─────────────────────────────────────────────────────
+
+def hyde_search(query: str, collection, hypothetical_answer: str, top_k: int = 5) -> list[str]:
+    # Pass pre-generated answer to save API calls
+    hyde_embedding = embeddings_model.embed_query(hypothetical_answer)
+
+    results = collection.query(
+        query_embeddings=[hyde_embedding],
+        n_results=top_k
+    )
+    return results["documents"][0]
+
+
+# ─── STEP 5: NAIVE SEARCH (Baseline Comparison) ─────────────────────────────
+
+def naive_search(query: str, collection, top_k: int = 5) -> list[str]:
+    query_embedding = embeddings_model.embed_query(query)
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=top_k
+    )
+    return results["documents"][0]
+
+
+# ─── MAIN EXECUTION ──────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    PDF_PATH = "day09/test.pdf"  # Reusing Day 9 test PDF
+
+    print("PDF load ho rahi hai...")
+    chunks = load_pdf_chunks(PDF_PATH)
+    print(f"Total chunks created: {len(chunks)}")
+
+    print("\nChromaDB index ban raha hai...")
+    collection = build_dense_index(chunks)
+    print("Database ready!")
+
+    # Single Test Query
+    query = "what is a vector database"
+    print(f"\n{'='*50}\nQuery: '{query}'\n{'='*50}")
+
+    # Generate hypothetical answer once and reuse it
+    hyp_answer = generate_hypothetical_answer(query)
+    print(f"\nHypothetical Answer Generated by LLM:\n{hyp_answer}\n")
+    print("-" * 50)
+
+    print("\n--- Naive RAG Result (Direct Query Embedding) ---")
+    naive_results = naive_search(query, collection, top_k=1)
+    print(naive_results[0][:250] + "...")
+
+    print("\n--- HyDE Result (Hypothetical Answer Embedding) ---")
+    hyde_results = hyde_search(query, collection, hyp_answer, top_k=1)
+    print(hyde_results[0][:250] + "...")
