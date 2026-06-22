@@ -10,7 +10,7 @@ load_dotenv()
 
 # ── LLM ───────────────────────────────────────────────────────────────────────
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.1-flash-lite",
+    model="gemini-2.5-flash-lite",
     google_api_key=os.getenv("GEMINI_API_KEY"),
 )
 
@@ -58,12 +58,7 @@ def plan(query: str) -> list[dict]:
     - "tool": one of [web_search, calculator, final_answer]
     - "tool_input": exact input to pass to the tool
 
-    Return ONLY valid JSON array, nothing else. Example:
-    [
-    {{"step_num": 1, "description": "Search for X", "tool": "web_search", "tool_input": "X 2024"}},
-    {{"step_num": 2, "description": "Calculate Y", "tool": "calculator", "tool_input": "100 * 1.02"}},
-    {{"step_num": 3, "description": "Compile answer", "tool": "final_answer", "tool_input": "Summarize all results"}}
-    ]"""
+    Return ONLY a valid JSON array of objects, nothing else. Do not wrap it in any dict layers."""
 
     response = llm.invoke(planner_prompt)
     
@@ -80,6 +75,24 @@ def plan(query: str) -> list[dict]:
         raw = " ".join([str(x) for x in res_text]).strip()
     else:
         raw = str(res_text).strip()
+
+    # ── FIX: Clean stringified dictionary structures if leaked ──
+    if raw.startswith("{'") or raw.startswith('{"'):
+        match_inside_text = re.search(r"'(?:text|content)':\s*['\"](.*?)['\"],?\s*'extras'", raw, re.DOTALL)
+        if match_inside_text:
+            raw = match_inside_text.group(1)
+        else:
+            try:
+                # Fallback to standard object replace parser
+                clean_json_str = raw.replace("'", '"')
+                parsed_dict = json.loads(clean_json_str)
+                if isinstance(parsed_dict, dict) and 'text' in parsed_dict:
+                    raw = parsed_dict['text']
+            except:
+                pass
+
+    # Unescape escaped newlines or quotes if any leaked from string extraction
+    raw = raw.replace('\\n', '\n').replace('\\"', '"').replace("\\'", "'")
 
     # Advanced Regex Fix: Safely extract anything inside the main JSON array brackets [ ... ]
     match = re.search(r'\[\s*\{.*\}\s*\]', raw, re.DOTALL)
@@ -103,7 +116,7 @@ def plan(query: str) -> list[dict]:
 # ── EXECUTOR — runs each step ──────────────────────────────────────────────────
 def execute_steps(steps: list[dict], query: str) -> list[dict]:
     results = []
-    context = {"query": query}  # Fixed: Pre-populating the query context so final compiler can see it
+    context = {"query": query}  
 
     for step in steps:
         step_num = step.get("step_num")
