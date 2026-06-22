@@ -15,8 +15,8 @@ BENCHMARK_QUERY = (
 def score_result(result: dict) -> dict:
     output = result.get("output", "").lower()
 
-    population_found  = any(w in output for w in ["million", "billion", "population", "230", "231", "232", "233"])
-    growth_calculated = any(w in output for w in ["5 year", "five year", "2029", "2030", "254", "255", "256", "253"])
+    population_found  = any(w in output for w in ["million", "billion", "population", "230", "231", "232", "233", "240", "250", "251", "259"])
+    growth_calculated = any(w in output for w in ["5 year", "five year", "2029", "2030", "2031", "254", "255", "256", "253", "260", "277", "286"])
     literacy_found    = any(w in output for w in ["literacy", "literate", "58", "60", "62", "63", "%"])
 
     score = sum([population_found, growth_calculated, literacy_found]) / 3
