@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.tools.tavily_search import TavilySearchResults
@@ -80,12 +81,17 @@ def plan(query: str) -> list[dict]:
     else:
         raw = str(res_text).strip()
 
-    # strip markdown fences if present
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
-    raw = raw.strip()
+    # Advanced Regex Fix: Safely extract anything inside the main JSON array brackets [ ... ]
+    match = re.search(r'\[\s*\{.*\}\s*\]', raw, re.DOTALL)
+    if match:
+        raw = match.group(0)
+    else:
+        # Fallback strip markdown fences if regex missed it
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        raw = raw.strip()
 
     try:
         steps = json.loads(raw)
@@ -95,9 +101,9 @@ def plan(query: str) -> list[dict]:
         return []
 
 # ── EXECUTOR — runs each step ──────────────────────────────────────────────────
-def execute_steps(steps: list[dict]) -> list[dict]:
+def execute_steps(steps: list[dict], query: str) -> list[dict]:
     results = []
-    context = {}  # accumulated results from previous steps
+    context = {"query": query}  # Fixed: Pre-populating the query context so final compiler can see it
 
     for step in steps:
         step_num = step.get("step_num")
@@ -119,7 +125,17 @@ def execute_steps(steps: list[dict]) -> list[dict]:
 
                                 Write a clear, complete final answer using these results."""
             response = llm.invoke(compiler_prompt)
-            output = response.content.strip()
+            
+            # Safe text extraction for the final answer compiler response as well
+            if hasattr(response, 'content'):
+                output = response.content
+            else:
+                output = str(response)
+                
+            if isinstance(output, list):
+                output = " ".join([str(x) for x in output]).strip()
+            else:
+                output = str(output).strip()
         else:
             output = dispatch_tool(tool_name, tool_input)
 
@@ -157,8 +173,8 @@ def run_plan_execute_agent(query: str) -> dict:
     for s in steps:
         print(f"  Step {s['step_num']}: {s['description']} [{s['tool']}]")
 
-    # Step 2: Execute
-    results = execute_steps(steps)
+    # Step 2: Execute (Passing the query along)
+    results = execute_steps(steps, query)
 
     # Final output is last step's output
     final_output = results[-1]["output"] if results else "No output"
