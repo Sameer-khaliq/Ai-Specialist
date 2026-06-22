@@ -63,20 +63,23 @@ prompt = PromptTemplate.from_template(template)
 def run_react_agent(query:str)->dict:
     agent = create_react_agent(llm , tools, prompt)
     executor = AgentExecutor(
-        agent=agent,
-        tools=tools,
-        verbose=True,
-        max_iterations=3,
-        handle_parsing_errors=True,
+            agent=agent,
+            tools=tools,
+            verbose=True,
+            max_iterations=15,  
+            handle_parsing_errors=True,
+        )
+    try:
+        result = executor.invoke({"input": query})
+        output = result.get("output", "No response extracted.")
+    except Exception as e:
+        output = f"Agent execution stopped or failed. Error: {e}"
 
-    )
-    result = executor.invoke({"input": query})
-    return{
-        "Agent": "react",
+    return {
+        "agent": "ReAct",
         "query": query,
-        "output": result["output"],
+        "output": output,
     }
-
 if __name__ == "__main__":
     from benchmark_task import BENCHMARK_QUERY
     result = run_react_agent(BENCHMARK_QUERY)
