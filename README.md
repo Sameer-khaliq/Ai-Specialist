@@ -15,4 +15,4 @@
 - Day 12 ✅ - Implemented a contextual compression retriever with metadata filtering (85.7% reduction)
 - Day 13 ✅ - Built a ReAct agentic RAG system combining retrieval, calculation, and live web search      -              tools, achieving 100% (15/15) correct tool selection
 - Day 14 ✅ - Deployed production-grade Agentic RAG Assistant on Hugging Face Spaces with robust         -              dependency matching and LFS vector sync.
-- Day 15 ✅ - In Progress......
+- Day 15 ✅ - Implemented and benchmarked three agent architectures (ReAct, Reflexion, Plan-and-Execute) -              on identical tasks; documented real failure modes — stale data selection, evaluator    -              miscalibration, and silent wrong answers from rigid planning.
