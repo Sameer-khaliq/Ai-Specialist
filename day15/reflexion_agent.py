@@ -69,13 +69,27 @@ Score this answer from 0.0 to 1.0 based on:
 Reply with ONLY a decimal number like 0.7 or 1.0. Nothing else."""
 
     response = llm.invoke(eval_prompt)
+    
+    # Check if response is a string or a message object with content attribute
+    if hasattr(response, 'content'):
+        res_text = response.content
+    elif isinstance(response, dict):
+        res_text = response.get('content', str(response))
+    else:
+        res_text = str(response)
+        
+    # Safeguard against unexpected types (like lists or structural formats)
+    if isinstance(res_text, list):
+        raw_score = " ".join([str(x) for x in res_text]).strip()
+    else:
+        raw_score = str(res_text).strip()
+
     try:
-        score = float(response.content.strip())
+        score = float(raw_score)
         return min(max(score, 0.0), 1.0)  # clamp between 0 and 1
     except:
         return 0.5  # default if parsing fails
 
-# ── Reflector — writes what went wrong ────────────────────────────────────────
 # ── Reflector — writes what went wrong (Safe Version) ─────────────────────────
 def reflect_on_failure(query: str, output: str, score: float, prev_reflections: list) -> str:
     prev_text = "\n".join(prev_reflections) if prev_reflections else "None"
@@ -105,6 +119,7 @@ Write a SHORT reflection (2-3 sentences) on:
         return " ".join([str(x) for x in res_text]).strip()
         
     return str(res_text).strip()
+
 # ── Actor — ReAct agent with reflection context ────────────────────────────────
 def run_actor(query: str, reflections: list) -> str:
     reflection_context = ""
@@ -120,7 +135,7 @@ def run_actor(query: str, reflections: list) -> str:
         agent=agent,
         tools=tools,
         verbose=True,
-        max_iterations=12,
+        max_iterations=15,  # Increased from 12 to 15 to secure complete runs
         handle_parsing_errors=True,
         return_intermediate_steps=True,
     )
