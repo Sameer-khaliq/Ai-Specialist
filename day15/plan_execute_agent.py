@@ -65,7 +65,20 @@ def plan(query: str) -> list[dict]:
     ]"""
 
     response = llm.invoke(planner_prompt)
-    raw = response.content.strip()
+    
+    # Check if response is a message object or dictionary
+    if hasattr(response, 'content'):
+        res_text = response.content
+    elif isinstance(response, dict):
+        res_text = response.get('content', str(response))
+    else:
+        res_text = str(response)
+
+    # Safeguard against list or structural types
+    if isinstance(res_text, list):
+        raw = " ".join([str(x) for x in res_text]).strip()
+    else:
+        raw = str(res_text).strip()
 
     # strip markdown fences if present
     if raw.startswith("```"):
