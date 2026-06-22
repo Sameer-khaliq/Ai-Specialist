@@ -1,0 +1,18 @@
+Day 14 Accomplishments
+Advanced Retrieval:
+             Built a Hybrid Search system combining BM25 and ChromaDB, optimized using Reciprocal Rank Fusion (RRF).
+
+Smart Querying:
+             Implemented HyDE for hypothetical document expansion to improve embedding search accuracy.
+
+Token Efficiency:
+             Integrated Contextual Compression to shrink retrieved context size by 85.7%.
+
+Agentic Architecture:
+             Created a ReAct Agent that dynamically routes queries between a Local Knowledge Base, a Calculator, and Live Web Search (Tavily).
+
+RAGAS Evaluation:
+             Benchmarked the pipeline, achieving top-tier metrics: 1.00 Faithfulness, 1.00 Context Recall, and 0.85 Answer Relevancy.
+
+Frontend & Repository:
+             Wrapped the system in a clean Gradio UI (as seen in "agentic rag.PNG") and pushed the clean codebase to GitHub.
