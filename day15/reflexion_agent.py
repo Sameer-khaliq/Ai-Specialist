@@ -76,6 +76,7 @@ Reply with ONLY a decimal number like 0.7 or 1.0. Nothing else."""
         return 0.5  # default if parsing fails
 
 # ── Reflector — writes what went wrong ────────────────────────────────────────
+# ── Reflector — writes what went wrong (Safe Version) ─────────────────────────
 def reflect_on_failure(query: str, output: str, score: float, prev_reflections: list) -> str:
     prev_text = "\n".join(prev_reflections) if prev_reflections else "None"
     reflect_prompt = f"""You are helping an AI agent improve its answers.
@@ -90,8 +91,20 @@ Write a SHORT reflection (2-3 sentences) on:
 2. What should the agent do differently next time?"""
 
     response = llm.invoke(reflect_prompt)
-    return response.content.strip()
-
+    
+    # Check if response is a string or a message object with content attribute
+    if hasattr(response, 'content'):
+        res_text = response.content
+    elif isinstance(response, dict):
+        res_text = response.get('content', str(response))
+    else:
+        res_text = str(response)
+        
+    # Safeguard against unexpected types (like lists or structural formats)
+    if isinstance(res_text, list):
+        return " ".join([str(x) for x in res_text]).strip()
+        
+    return str(res_text).strip()
 # ── Actor — ReAct agent with reflection context ────────────────────────────────
 def run_actor(query: str, reflections: list) -> str:
     reflection_context = ""
