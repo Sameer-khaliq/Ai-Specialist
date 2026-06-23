@@ -12,3 +12,4 @@ wheels/
 .vscode
 # Persisted vector DBs
 day12/chroma_db/
+*.db
