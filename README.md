@@ -16,4 +16,5 @@
 - Day 13 ✅ - Built a ReAct agentic RAG system combining retrieval, calculation, and live web search      -              tools, achieving 100% (15/15) correct tool selection
 - Day 14 ✅ - Deployed production-grade Agentic RAG Assistant on Hugging Face Spaces with robust         -              dependency matching and LFS vector sync.
 - Day 15 ✅ - Implemented and benchmarked three agent architectures (ReAct, Reflexion, Plan-and-Execute) -              on identical tasks; documented real failure modes — stale data selection, evaluator    -              miscalibration, and silent wrong answers from rigid planning.
-- Day 16 ✅ - In progress...
+- Day 16 ✅ - Day 16: Built a stateful multi-turn agent using LangGraph StateGraph + SqliteSaver —      -              persists full conversation history to SQLite restarts via thread_id session keys.
+- Day 17 ✅ - In Progress........
