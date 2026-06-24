@@ -28,4 +28,5 @@ uv run python agent.py
 ## Stack
 - LangGraph 0.2+
 - Gemini 2.5 Flash
+- Gemini 2.5 Flash Lite
 - SqliteSaver (local SQLite)
