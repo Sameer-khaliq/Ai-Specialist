@@ -23,7 +23,7 @@ def safe_llm_call(user_input: str) -> str:
     try:
         guard.validate(user_input)
     except Exception as e:
-        return f"❌ Input blocked: {e}"
+        return f" Input blocked: {e}"
     
     # Call Gemini
     response = chat_model.generate([
