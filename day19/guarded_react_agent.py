@@ -80,7 +80,7 @@ Query: {user_query}"""]}
             if action == last_action:
                 same_action_count += 1
                 if same_action_count >= 2:
-                    return "⚠️ Loop detected: agent repeating same action. Stopping."
+                    return "Loop detected: agent repeating same action. Stopping."
             else:
                 same_action_count = 0
                 last_action = action
@@ -98,7 +98,7 @@ Query: {user_query}"""]}
         else:
             return text  # Direct answer, no tool needed
     
-    return "⚠️ Max iterations reached. Possible infinite loop — stopping agent."
+    return " Max iterations reached. Possible infinite loop — stopping agent."
 
 # --- Adversarial Tests ---
 test_cases = [
@@ -112,4 +112,4 @@ for query in test_cases:
     print(f"\n{'='*50}")
     print(f"Query: {query}")
     result = run_agent(query)
-    print(f"\n✅ Final: {result}")
+    print(f"\n Final: {result}")
