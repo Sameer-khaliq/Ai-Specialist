@@ -18,3 +18,6 @@
 - Day 15 ✅ - Implemented and benchmarked three agent architectures (ReAct, Reflexion, Plan-and-Execute) -              on identical tasks; documented real failure modes — stale data selection, evaluator    -              miscalibration, and silent wrong answers from rigid planning.
 - Day 16 ✅ - Day 16: Built a stateful multi-turn agent using LangGraph StateGraph + SqliteSaver —      -              persists full conversation history to SQLite restarts via thread_id session keys.
 - Day 17 ✅ - 3-agent CrewAI pipeline (Researcher→Writer→Editor) with Ollama/llama3 locally — topic in, -              edited article out.
+- Day 18 ✅ - Built LangGraph StateGraph with SqliteSaver persistent memory; key insight: LLM has no     -              memory, history is context fed each turn.
+- Day 19 ✅ - Implemented agent guardrails: Guardrails AI, NeMo Guardrails (Colang DSL), infinite loop -              detection, tool error handling — adversarially tested.
+- Day 20 ✅ - Built autonomous code-execution agent with LangChain ReAct + local exec() sandbox; -              write→execute→debug→fix loop working.
