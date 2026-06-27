@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.agents import AgentExecutor, create_react_agent
-from langchain.tools import Tool
+from langchain_classic.agents import AgentExecutor, create_react_agent
+from langchain_core.tools import Tool
 from langchain_core.prompts import PromptTemplate
 from langchain_experimental.tools import PythonREPLTool
 
