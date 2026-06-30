@@ -1,5 +1,4 @@
 import os
-import concurrent.futures
 from typing import TypedDict, List
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
@@ -7,11 +6,19 @@ from langchain_tavily import TavilySearch, TavilyExtract
 from langgraph.graph import StateGraph, END
 from langsmith import traceable
 
-load_dotenv(r"C:\ai-specialist\.env")  
+load_dotenv(r"C:\ai-specialist\.env")
 
+# ── LangSmith tracing setup ────────────────────────────────────────────────
+# These can also live in your .env file instead of here. Either works —
+# just make sure they're set BEFORE any LangChain/LangGraph calls happen.
+os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
+os.environ.setdefault("LANGCHAIN_PROJECT", "day22-observability")
+# LANGCHAIN_API_KEY should be in your .env file, not hardcoded here.
 
 print("TAVILY KEY:", os.getenv("TAVILY_API_KEY", "NOT FOUND")[:5])
 print("GROQ KEY:", os.getenv("GROQ_API_KEY", "NOT FOUND")[:5])
+print("LANGSMITH KEY:", os.getenv("LANGCHAIN_API_KEY", "NOT FOUND")[:5])
+print("LANGSMITH PROJECT:", os.getenv("LANGCHAIN_PROJECT"))
 
 llm = ChatGroq(
     model="llama-3.3-70b-versatile",
@@ -31,6 +38,7 @@ tavily_extract = TavilyExtract(
     format="markdown",
 )
 
+
 class ResearchState(TypedDict):
     topic: str
     search_queries: List[str]
@@ -40,7 +48,8 @@ class ResearchState(TypedDict):
     report: str
     error: str
 
-@traceable(name="query-preprocessing")
+
+@traceable(name="generate_queries")
 def generate_queries(state: ResearchState) -> dict:
     topic = state['topic']
     print(f'[Node 1] Generating queries for: {topic}')
@@ -60,6 +69,7 @@ def generate_queries(state: ResearchState) -> dict:
     return {"search_queries": queries}
 
 
+@traceable(name="search_web")
 def search_web(state: ResearchState) -> dict:
     queries = state["search_queries"]
     all_results = []
@@ -69,20 +79,21 @@ def search_web(state: ResearchState) -> dict:
     for query in queries:
         print(f"[Node 2] Searching: {query}")
         try:
-           
             results = tavily_search.invoke({"query": query})
-            print(f"[DEBUG] Type: {type(results)}")
-            print(f"[DEBUG] Raw result: {results}")
-            # Tavily returns list directly
+            print(f"[Node 2][DEBUG] type={type(results)}")
+            if isinstance(results, dict):
+                print(f"[Node 2][DEBUG] keys={list(results.keys())}")
+                if "error" in results:
+                    print(f"[Node 2][DEBUG] ERROR CONTENT: {results['error']}")
+
             if isinstance(results, list):
                 for r in results:
                     url = r.get("url", "")
                     if url and url not in seen_urls:
                         seen_urls.add(url)
                         all_urls.append(url)
-                        all_results.append(r)  # poora dict
+                        all_results.append(r)
 
-            # Sometimes returns dict with 'results' key
             elif isinstance(results, dict) and "results" in results:
                 for r in results["results"]:
                     url = r.get("url", "")
@@ -92,15 +103,19 @@ def search_web(state: ResearchState) -> dict:
                         all_results.append(r)
 
         except Exception as e:
+            import traceback
             print(f"[Node 2] Search error for '{query}': {e}")
+            traceback.print_exc()
 
-    
     top_urls = all_urls[:5]
     top_results = all_results[:5]
     print(f"[Node 2] Found {len(top_urls)} unique URLs")
+    if not top_urls:
+        print(f"[Node 2][DEBUG] all_results was empty. Check Tavily API key/quota.")
     return {"search_results": top_results, "urls": top_urls}
 
 
+@traceable(name="read_urls")
 def read_urls(state: ResearchState) -> dict:
     urls = state["urls"]
     search_results = state["search_results"]
@@ -135,6 +150,7 @@ def read_urls(state: ResearchState) -> dict:
     return {"url_contents": contents}
 
 
+@traceable(name="synthesize_report")
 def synthesize_report(state: ResearchState) -> dict:
     topic = state["topic"]
     contents = state["url_contents"]
@@ -187,27 +203,23 @@ def synthesize_report(state: ResearchState) -> dict:
     response = llm.invoke(prompt)
     report = response.content
     print(f"[Node 4] Report generated ({len(report)} chars)")
-    # ── Save to .md file ──────────────────────────────────────────────────────
+
     import re
     from datetime import datetime
-    
-    # topic se filename banao — spaces ko underscores se replace karo
-    safe_topic = re.sub(r'[^a-zA-Z0-9\s]', '', topic)  # special chars hataao
-    safe_topic = safe_topic.strip().replace(' ', '_')[:50]  # max 50 chars
+
+    safe_topic = re.sub(r'[^a-zA-Z0-9\s]', '', topic)
+    safe_topic = safe_topic.strip().replace(' ', '_')[:50]
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
     filename = f"{safe_topic}_{timestamp}.md"
-    
-    # path
-    output_dir = r"C:\ai-specialist\day21"
+
+    output_dir = r"C:\ai-specialist\day22"
+    os.makedirs(output_dir, exist_ok=True)
     filepath = os.path.join(output_dir, filename)
-    
+
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(report)
-    
+
     print(f"[Node 4] Report saved: {filepath}")
-#
-
-
 
     return {"report": report}
 
@@ -226,10 +238,22 @@ def build_research_agent():
     return graph.compile()
 
 
-def run_research(topic: str) -> str:
+# ── Singleton pattern (Day 21 fix) ─────────────────────────────────────────
+_agent = None
+
+def get_agent():
+    global _agent
+    if _agent is None:
+        print("[Agent] Building graph (first call only)...")
+        _agent = build_research_agent()
+    return _agent
+
+
+def run_research(topic: str, session_id: str = "default_session") -> str:
     if not topic or not topic.strip():
         return "Please enter a research topic."
-    agent = build_research_agent()
+
+    agent = get_agent()
     initial_state = ResearchState(
         topic=topic.strip(),
         search_queries=[],
@@ -239,13 +263,25 @@ def run_research(topic: str) -> str:
         report="",
         error="",
     )
+
+    # Metadata + tags — this is what lets you filter/analyze runs in
+    # the LangSmith dashboard later (by user, session, query type, etc.)
+    config = {
+        "metadata": {
+            "session_id": session_id,
+            "query_type": "research",
+            "topic": topic.strip()[:100],
+        },
+        "tags": ["production", "research-agent", "day22"],
+    }
+
     try:
-        result = agent.invoke(initial_state)
+        result = agent.invoke(initial_state, config=config)
         return result.get("report", "No report generated.")
     except Exception as e:
         return f"Agent error: {str(e)}"
 
 
 if __name__ == "__main__":
-    report = run_research("Scope of freelancing in Ai agents 2026")
+    report = run_research("Scope of freelancing in AI agents 2026")
     print(report)
