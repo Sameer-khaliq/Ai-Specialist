@@ -10,6 +10,7 @@ dependencies = [
     "crewai-tools>=0.76.0",
     "datasets>=5.0.0",
     "dspy>=2.6.13",
+    "dspy-ai>=2.6.27",
     "e2b-code-interpreter>=2.8.1",
     "fastapi>=0.136.3",
     "gradio>=6.17.3",
