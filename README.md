@@ -21,4 +21,6 @@
 - Day 18 ✅ - Built LangGraph StateGraph with SqliteSaver persistent memory; key insight: LLM has no     -              memory, history is context fed each turn.
 - Day 19 ✅ - Implemented agent guardrails: Guardrails AI, NeMo Guardrails (Colang DSL), infinite loop -              detection, tool error handling — adversarially tested.
 - Day 20 ✅ - Built autonomous code-execution agent with LangChain ReAct + local exec() sandbox; -              write→execute→debug→fix loop working.
-- Day 21 ✅ - In progress.........
+- Day 21 ✅ - ResearchPilot AI — LangGraph 4-node research agent (Groq Llama 3.3 70B + Gradio). GitHub:  -              ResearchPilotAI.
+- Day 22 ✅ - Added LangSmith observability to ResearchPilot AI — full tracing, per-node latency, token/-              cost tracking, metadata tags, programmatic stats script.
+- Day 22 ✅ - In progress.......
