@@ -23,4 +23,4 @@
 - Day 20 ✅ - Built autonomous code-execution agent with LangChain ReAct + local exec() sandbox; -              write→execute→debug→fix loop working.
 - Day 21 ✅ - ResearchPilot AI — LangGraph 4-node research agent (Groq Llama 3.3 70B + Gradio). GitHub:  -              ResearchPilotAI.
 - Day 22 ✅ - Added LangSmith observability to ResearchPilot AI — full tracing, per-node latency, token/-              cost tracking, metadata tags, programmatic stats script.
-- Day 22 ✅ - In progress.......
+- Day 23 ✅ - DSPy prompt optimization experiment — job-posting extraction task, hand-written baseline -              100% vs DSPy 91.67%, valid finding that DSPy's edge is on harder/larger-dataset tasks.
