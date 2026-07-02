@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Literal, Optional
 
-# 1. NEW explicitly defined model to fix the line_items dict issue
+
 class LineItem(BaseModel):
     name: str
     quantity: Optional[int] = None
@@ -22,11 +22,11 @@ class UIElement(BaseModel):
     type: str
     text: str
 
-# 2. Updated ReceiptData using our new LineItem class
+
 class ReceiptData(BaseModel):
     merchant_name: str
     date: Optional[str] = None
-    line_items: list[LineItem] = []  # <-- Swapped list[dict] for list[LineItem]
+    line_items: list[LineItem] = []  
     subtotal: Optional[float] = None
     tax: Optional[float] = None
     total: Optional[float] = None

@@ -29,7 +29,7 @@ def extract_from_image(image_path: str) -> ExtractionResult:
         ],
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
-            response_schema=ExtractionResult, # Now 100% compliant with Developer API
+            response_schema=ExtractionResult, 
             temperature=0
         )
     )
