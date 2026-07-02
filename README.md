@@ -24,4 +24,5 @@
 - Day 21 ✅ - ResearchPilot AI — LangGraph 4-node research agent (Groq Llama 3.3 70B + Gradio). GitHub:  -              ResearchPilotAI.
 - Day 22 ✅ - Added LangSmith observability to ResearchPilot AI — full tracing, per-node latency, token/-              cost tracking, metadata tags, programmatic stats script.
 - Day 23 ✅ - DSPy prompt optimization experiment — job-posting extraction task, hand-written baseline -              100% vs DSPy 91.67%, valid finding that DSPy's edge is on harder/larger-dataset tasks.
-- Day 24 ✅ - In Progress..........
+- Day 24 ✅ - Semantic caching layer using GPTCache + Redis Cloud  — cuts redundant LLM calls by catching -              paraphrased queries, delivering 94.4% cache hit rate and 75.3% latency reduction.
+- Day 25 ✅ - Multi-modal extraction pipeline using Gemini 2.5 Flash Vision — classifies and extracts -              structured JSON from receipts, diagrams, and screenshots with 98%+ confidence.
