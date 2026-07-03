@@ -1,0 +1,21 @@
+task_id,difficulty,model,kind,latency_sec,passed_check,output
+t1_classification,easy,llama3.2,local,103.47,True,"I would classify this customer message as a ""complaint"". The customer is expressing dissatisfaction with the product and requesting a refund, indicating that they are unhappy with their purchase."
+t1_classification,easy,mistral:7b,local,246.01,True, The customer message can be classified as a 'complaint'.
+t1_classification,easy,groq-llama3.3-70b,cloud,7.51,True,"I would classify this customer message as a 'complaint'. The customer is expressing dissatisfaction with their purchase, stating that it arrived broken, and is requesting a refund, which further indic"
+t1_classification,easy,gemini-2.5-flash,cloud,2.6,True,This customer message is a **complaint**.
+t2_extraction,easy,llama3.2,local,78.68,True,"Here are the extracted details:  * Name: John Carter * Date: March 5th, 2025 * Amount: $450"
+t2_extraction,easy,mistral:7b,local,97.03,True," Name: John Carter  Date: March 5th, 2025  Amount: $450"
+t2_extraction,easy,groq-llama3.3-70b,cloud,0.5,True,"Here are the extracted details:  1. **Name**: John Carter 2. **Date**: March 5th, 2025 3. **Amount**: $450"
+t2_extraction,easy,gemini-2.5-flash,cloud,2.12,True,"*   **Name:** John Carter *   **Date:** March 5th, 2025 *   **Amount:** $450"
+t3_summarization,medium,llama3.2,local,157.44,,"Here is a summary in 2 sentences:  Apple may be planning to release AirPods with cameras next year, which will allow the virtual assistant Siri to gather information about your surroundings without re"
+t3_summarization,medium,mistral:7b,local,325.92,," The report suggests that Apple might release AirPods with built-in cameras in 2023, designed to provide information about surroundings to Siri for hands-free interaction. This development, if confirm"
+t3_summarization,medium,groq-llama3.3-70b,cloud,,,ERROR: Connection error.
+t3_summarization,medium,gemini-2.5-flash,cloud,2.31,,"Apple is reportedly planning to release AirPods with cameras as early as next year, which will feed environmental information to Siri rather than taking pictures. This innovation aims to unlock new sc"
+t4_reasoning,medium,llama3.2,local,194.99,True,"To find out how many items were sold, let's start by finding 35% of the original number of items.  35% of 120 = (35/100) * 120 = 0.35 * 120 = 42  So, on Monday, they sold 42 items.  The remainder is: "
+t4_reasoning,medium,mistral:7b,local,339.86,False," First, let's calculate how many items were sold on each day:  For Monday: 35% of 120 = (35/100) * 120 = 42 items For Tuesday: Initially, there were 120 - 42 = 78 items left. Then, 20% of the remainin"
+t4_reasoning,medium,groq-llama3.3-70b,cloud,2.11,True,"To find the number of items left, we first need to calculate the number of items sold on Monday.  35% of 120 items is 0.35 * 120 = 42 items.  Now, we subtract the items sold on Monday from the total: "
+t4_reasoning,medium,gemini-2.5-flash,cloud,8.71,True,Here's how to solve the problem step-by-step:  1.  **Items sold on Monday:**     *   35% of 120 items = 0.35 * 120 = 42 items.  2.  **Items remaining after Monday:**     *   120 - 42 = 78 items.  3.  
+t5_code_generation,hard,llama3.2,local,87.62,,def is_palindrome(s):     s = ''.join(c for c in s if c.isalnum()).lower()     return s == s[::-1]
+t5_code_generation,hard,mistral:7b,local,268.55,," Here's a Python function that checks if a given string is a palindrome, ignoring spaces and case:  ```python def is_palindrome(s):     s = ''.join(c.lower() for c in s if c.isalnum())  # Remove space"
+t5_code_generation,hard,groq-llama3.3-70b,cloud,1.06,,"**Palindrome Checker Function** ================================  ### Function Description  This function checks if a given string is a palindrome, ignoring spaces and case.  ### Code  ```python def i"
+t5_code_generation,hard,gemini-2.5-flash,cloud,11.79,,"To check if a string is a palindrome while ignoring spaces and case, we need to:  1.  **Normalize the string:**     *   Convert all characters to the same case (e.g., lowercase).     *   Remove all no"
