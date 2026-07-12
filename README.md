@@ -31,3 +31,7 @@
 - Day 28 ✅ - Conducted a full production-readiness audit across all 3 portfolio repos — centralized    -              config, structured logging, multi-stage Docker builds, and professional documentation -              added to each.
 - Day 29 ✅ - Built the retrieval infrastructure for an e-commerce domain RAG system — hybrid search (BM25 -              dense embeddings + RRF fusion) with category/price metadata filtering, 23 tests passing.
 - Day 30 ✅ - Built an LLM-powered catalog enrichment pipeline with retry/circuit-breaker resilience and -              confidence tracking — automatically completes sparse product listings from a category  -              specific knowledge -base, grounded to avoid hallucinated attributes.
+- Day 31 ✅ - Added Reciprocal Rank Fusion RRF in hybrid search and code is ready for its applications.
+-Day32-34✅ - Vector database deep dive: implemented pgvector and Qdrant with HNSW indexing, benchmarked -              distance metrics and query performance, and built a generic cross-DB migration script -              with a comparative benchmark report.
+-Day35-39✅ - Structured the upcoming phases and chosen the ecommerce field for the projects and future -              work due to its high potential.
+- Day 40 ✅ - Phase 1 Completed.. Now time for niche depthing and building some real projects.
