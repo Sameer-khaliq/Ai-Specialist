@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 model = SentenceTransformer('all-MiniLM-L6-v2')
 client = QdrantClient(host="localhost", port=6333)
 
-# Load same sample data from Day 32
+
 with open("day32/sample_texts.json", "r") as f:
     texts = json.load(f)
 
