@@ -18,7 +18,7 @@ print("--- Plain Search ---")
 for r in results:
     print(r.score, r.payload["content"][:60])
 
-# Filtered search (payload filtering — Qdrant's strength)
+
 filtered_results = client.search(
     collection_name="documents",
     query_vector=query_emb,
