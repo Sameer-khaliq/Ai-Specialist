@@ -27,7 +27,7 @@ def bench_qdrant():
 if __name__ == "__main__":
     results = {}
     for name, fn in [("pgvector", bench_pgvector), ("qdrant", bench_qdrant)]:
-        times = [fn() for _ in range(10)]  # 10 runs for avg
+        times = [fn() for _ in range(10)] 
         avg = sum(times) / len(times)
         results[name] = avg
         print(f"{name}: avg={avg:.2f}ms, min={min(times):.2f}ms, max={max(times):.2f}ms")
