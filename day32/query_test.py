@@ -10,7 +10,7 @@ conn = psycopg2.connect(
     host="localhost", port="5433"
 )
 cur = conn.cursor()
-
+#testing
 for op, name in [("<=>", "Cosine"), ("<->", "L2"), ("<#>", "Dot Product")]:
     cur.execute(f"""
         SELECT content, embedding {op} %s::vector AS distance
